@@ -74,6 +74,7 @@
     "statuses": "^2.0.1",
     "toidentifier": "^1.0.1",
     "type-is": "^1.6.18",
+    "typeorm": "^0.3.21",
     "unpipe": "^1.0.0",
     "utils-merge": "^1.0.1",
     "vary": "^1.1.2"
@@ -84,5 +85,8 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.0"
+  }
 }
