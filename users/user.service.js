@@ -1,69 +1,63 @@
 const bcrypt = require('bcryptjs');
-const db = require('../helpers/db');
+const db = require('_helpers/db');
 
 module.exports = {
-  getAll,
-  getById,
-  create,
-  update,
-  delete: _delete
+    getAll,
+    getById,
+    create,
+    update,
+    delete: _delete
 };
 
 async function getAll() {
-  return await db.User.findAll();
+    return await db.User.findAll();
 }
 
-async function getById(id) {
-  return await getUser(id);
+async function getById(Id) {
+    return await getUser(Id);
 }
 
 async function create(params) {
-  // Validate if email already exists
-  if (await db.User.findOne({ where: { email: params.email } })) {
-    throw `Email "${params.email}" is already registered`;
-  }
+    //validate
+    if (await db.User.findOne({ where: { email: params.email} })) {
+        throw 'Email "' + params.email + '" is already registerd';        
+    }
 
-  // Create user object
-  const user = new db.User(params);
+    const user = new db.User(params);
 
-  // Hash password before saving
-  if (params.password) {
+    //hash password
     user.passwordHash = await bcrypt.hash(params.password, 10);
-  }
 
-  // Save user to the database
-  await user.save();
-  return user;
+    //save user
+    await user.save();
 }
 
-async function update(id, params) {
-  const user = await getUser(id);
+async function update(id, params){
+    const user = await getUser(id);
 
-  // Validate if the username is being changed and already exists
-  const usernameChanged = params.username && user.username !== params.username;
-  if (usernameChanged && await db.User.findOne({ where: { username: params.username } })) {
-    throw `Username "${params.username}" is already taken`;
-  }
+    //validate
+    const usernameChanged = params.username && user.username !== params.username;
+    if (usernameChanged && await db.User.findOne({ where: { username: params.username} })) {
+        throw 'Username"' + params.username + '" is already taken';
+    }
 
-  // Hash new password if it was provided
-  if (params.password) {
-    params.passwordHash = await bcrypt.hash(params.password, 10);
-  }
+    //hash password if it was entered
+    if (params.password) {
+        params.passwordHash = await bcrypt.hash(params.password, 10);
+    }
 
-  // Update user data
-  Object.assign(user, params);
-  await user.save();
-  return user;
+    //copy params to user and save
+    Object.assign(user, params);
+    await user.save();
 }
 
 async function _delete(id) {
-  const user = await getUser(id);
-  await user.destroy();
+    const user = await getUser(id);
+    await user.destroy();
 }
 
-// Helper function to get user by ID
 async function getUser(id) {
-  const user = await db.User.findByPk(id);
-  if (!user) throw 'User not found';
-  return user;
+    const user = await db.User.findByPk(id);
+    if (!user) throw 'User not found';
+    return user;
 }
